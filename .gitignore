@@ -1,0 +1,11 @@
+# Compiled simulator output
+*.out
+*.vvp
+
+# Waveform dumps (can be huge). Keep only small, deliberate ones.
+*.vcd
+
+# Editor / OS junk
+.vscode/
+Thumbs.db
+.DS_Store
