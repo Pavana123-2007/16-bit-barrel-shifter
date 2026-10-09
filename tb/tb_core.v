@@ -80,7 +80,7 @@ module tb_core;
                 default: pattern = 16'hFFFF;
             endcase
             for (k = 0; k < 16; k = k + 1)
-                check(pattern, k, 0);
+                check(pattern, k, 1);
         end
 
         $display("----------------------------------------");
