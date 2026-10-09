@@ -70,3 +70,50 @@ Internal buses: s1, s2, s3 (16 bits each) join the four stages.
 ## 6. Notes for P2 (to be completed by P2)
 
 (P2: add the complete design, MODE table and circuit diagram below.)
+
+## 7. Why this design (P1 explanation)
+
+### Why 4 stages
+A 4-bit shift amount can be any number from 0 to 15, and 16 = 2^4, so
+log2(16) = 4 stages are enough.
+
+### Why shifts of 1, 2, 4 and 8
+Every number from 0 to 15 is a sum of these four values, using each at most
+once. That is just its binary representation. So four on/off decisions are
+enough to build any shift, instead of 15 separate shift circuits.
+
+### Why one 2:1 MUX per bit per stage
+Each output bit of a stage has only two possible sources: its own input bit
+(stage OFF) or the bit SHIFT places lower (stage ON). Choosing between two
+sources is exactly a 2:1 MUX.
+
+### What a 2:1 MUX does
+A 2:1 MUX has two data inputs (A and B), one select line (S) and one output Y.
+If S = 0 then Y = A. If S = 1 then Y = B.
+In Verilog: assign Y = S ? B : A;
+
+### How a stage is built
+A stage has 16 output bits, so it uses 16 MUXes side by side, all sharing the
+same select line. For a stage with shift amount SHIFT, output bit i has
+A = in[i] and B = in[i - SHIFT]. For the lowest SHIFT bits there is nothing
+below to take from, so B = 0 (zero fill).
+
+### Worked example: shift by 13
+SHAMT = 13 = 1101 in binary, so SHAMT[3]=1, SHAMT[2]=1, SHAMT[1]=0, SHAMT[0]=1.
+
+| Stage | Shift | Select bit | Enabled? | Action |
+|-------|-------|------------|----------|--------|
+| 1 | 1 | SHAMT[0] = 1 | yes | shift left by 1 |
+| 2 | 2 | SHAMT[1] = 0 | no | pass through |
+| 3 | 4 | SHAMT[2] = 1 | yes | shift left by 4 |
+| 4 | 8 | SHAMT[3] = 1 | yes | shift left by 8 |
+
+Total shift = 1 + 4 + 8 = 13.
+
+Concrete run with DIN = 0x1234 (0001 0010 0011 0100):
+- After stage 1 (x1): 0010 0100 0110 1000 = 0x2468
+- After stage 2 (pass): 0x2468
+- After stage 3 (x4): 0100 0110 1000 0000 = 0x4680
+- After stage 4 (x8): 1000 0000 0000 0000 = 0x8000
+
+DOUT = 0x8000, which matches the testbench result for din=1234 shamt=13.
