@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" font-family="Arial, Helvetica, sans-serif">
+  <rect width="1000" height="300" fill="#ffffff"/>
+  <text x="450" y="30" font-size="20" font-weight="bold" text-anchor="middle">16-bit Barrel Shifter Core: 4-Stage MUX Chain</text>
+
+  <text x="20" y="170" font-size="16" font-weight="bold">DIN[15:0]</text>
+  <line x1="95" y1="165" x2="150" y2="165" stroke="#000" stroke-width="2"/>
+
+  <rect x="150" y="120" width="130" height="90" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="215" y="155" font-size="15" font-weight="bold" text-anchor="middle">Stage 1</text>
+  <text x="215" y="175" font-size="13" text-anchor="middle">16 x 2:1 MUX</text>
+  <text x="215" y="195" font-size="13" text-anchor="middle">shift x1</text>
+  <line x1="280" y1="165" x2="330" y2="165" stroke="#000" stroke-width="2"/>
+  <text x="305" y="155" font-size="11" text-anchor="middle">s1</text>
+
+  <rect x="330" y="120" width="130" height="90" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="395" y="155" font-size="15" font-weight="bold" text-anchor="middle">Stage 2</text>
+  <text x="395" y="175" font-size="13" text-anchor="middle">16 x 2:1 MUX</text>
+  <text x="395" y="195" font-size="13" text-anchor="middle">shift x2</text>
+  <line x1="460" y1="165" x2="510" y2="165" stroke="#000" stroke-width="2"/>
+  <text x="485" y="155" font-size="11" text-anchor="middle">s2</text>
+
+  <rect x="510" y="120" width="130" height="90" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="575" y="155" font-size="15" font-weight="bold" text-anchor="middle">Stage 3</text>
+  <text x="575" y="175" font-size="13" text-anchor="middle">16 x 2:1 MUX</text>
+  <text x="575" y="195" font-size="13" text-anchor="middle">shift x4</text>
+  <line x1="640" y1="165" x2="690" y2="165" stroke="#000" stroke-width="2"/>
+  <text x="665" y="155" font-size="11" text-anchor="middle">s3</text>
+
+  <rect x="690" y="120" width="130" height="90" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="755" y="155" font-size="15" font-weight="bold" text-anchor="middle">Stage 4</text>
+  <text x="755" y="175" font-size="13" text-anchor="middle">16 x 2:1 MUX</text>
+  <text x="755" y="195" font-size="13" text-anchor="middle">shift x8</text>
+  <line x1="820" y1="165" x2="860" y2="165" stroke="#000" stroke-width="2"/>
+  <text x="866" y="170" font-size="16" font-weight="bold">DOUT[15:0]</text>
+
+  <line x1="215" y1="60" x2="215" y2="120" stroke="#b91c1c" stroke-width="2"/>
+  <text x="215" y="52" font-size="14" fill="#b91c1c" text-anchor="middle">SHAMT[0]</text>
+  <line x1="395" y1="60" x2="395" y2="120" stroke="#b91c1c" stroke-width="2"/>
+  <text x="395" y="52" font-size="14" fill="#b91c1c" text-anchor="middle">SHAMT[1]</text>
+  <line x1="575" y1="60" x2="575" y2="120" stroke="#b91c1c" stroke-width="2"/>
+  <text x="575" y="52" font-size="14" fill="#b91c1c" text-anchor="middle">SHAMT[2]</text>
+  <line x1="755" y1="60" x2="755" y2="120" stroke="#b91c1c" stroke-width="2"/>
+  <text x="755" y="52" font-size="14" fill="#b91c1c" text-anchor="middle">SHAMT[3]</text>
+
+  <text x="450" y="250" font-size="14" text-anchor="middle">Logical left shift, zero fill. 4 stages x 16 MUXes = 64 two-to-one MUXes.</text>
+  <text x="450" y="272" font-size="14" text-anchor="middle">Example: shift by 13 = 8 + 4 + 1 enables stages 4, 3 and 1.</text>
+</svg>
