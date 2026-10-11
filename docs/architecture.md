@@ -69,7 +69,136 @@ Internal buses: s1, s2, s3 (16 bits each) join the four stages.
 
 ## 6. Notes for P2 (to be completed by P2)
 
-(P2: add the complete design, MODE table and circuit diagram below.)
+### 6.1 Complete design (P2, tag v0.2-complete)
+
+The complete shifter is `barrel_shifter16` (src/barrel_shifter16.v). It keeps the
+same 4-stage logarithmic structure as P1's core (SHAMT[0] -> x1, SHAMT[1] -> x2,
+SHAMT[2] -> x4, SHAMT[3] -> x8) but each stage is now the mode-aware
+`shift_stage_mode` (src/shift_stage_mode.v). The design is purely combinational,
+so no FSM is needed. P1's files (shift_stage.v, barrel_core.v, tb_core.v) are
+unchanged and `make core` still passes.
+
+### 6.2 MODE table
+
+| MODE | Operation | Abbrev. | Direction | Fill / behaviour |
+|------|-----------|---------|-----------|------------------|
+| 00 | Logical Left Shift | SLL | left | zeros enter from the right |
+| 01 | Logical Right Shift | SRL | right | zeros enter from the left |
+| 10 | Arithmetic Right Shift | SRA | right | sign bit DIN[15] enters from the left |
+| 11 | Rotate Left | ROL | left | bits leaving the left re-enter on the right |
+
+### 6.3 Control decode (MODE -> stage controls)
+
+| MODE | right | rot | fill |
+|------|-------|-----|------|
+| 00 SLL | 0 | 0 | 0 |
+| 01 SRL | 1 | 0 | 0 |
+| 10 SRA | 1 | 0 | DIN[15] |
+| 11 ROL | 0 | 1 | 0 (unused) |
+
+Boolean equations (M1 = MODE[1], M0 = MODE[0]):
+
+- right = M1 XOR M0
+- rot   = M1 AND M0
+- fill  = M1 AND (NOT M0) AND DIN[15]
+
+These three signals are shared by all four stages. Each stage's own enable is
+still its SHAMT bit.
+
+### 6.4 Rule of one stage (shift_stage_mode, shift amount S)
+
+For output bit i, when the stage enable sel = 1:
+
+| Case | Output bit |
+|------|------------|
+| left, i >= S | in[i - S] |
+| left, i < S, rot = 0 (SLL) | 0 |
+| left, i < S, rot = 1 (ROL) | in[i - S + 16] (wrapped bit) |
+| right, i + S <= 15 | in[i + S] |
+| right, i + S > 15 | fill (0 for SRL, DIN[15] for SRA) |
+
+When sel = 0, out[i] = in[i] (pass through).
+
+### 6.5 Design choice: direction-aware stages (Option B)
+
+Two options were considered.
+
+- Option A (bit-reverse wrapper around P1's core): reverse DIN, shift left,
+  reverse back. P1's core can only zero-fill, so SRA (sign fill) and ROL
+  (wrap-around) would still need extra mask logic or a second pass through the
+  core. That gives more hardware and a less clear structure.
+- Option B (chosen): each stage selects between pass, shift in the chosen
+  direction, and fill/wrap. SRA and ROL fall out naturally: only the fill bit
+  and the wrap connection change. The 4-stage structure and the SHAMT-to-stage
+  mapping stay exactly as P1 froze them.
+
+To keep P1's frozen interface untouched, the mode-aware stage is a NEW module
+(shift_stage_mode) instead of a change to shift_stage. P1's core and testbench
+remain in the repo as the regression base (make core).
+
+Hardware estimate: 4 stages x 16 enable MUXes = 64 enable 2:1 MUXes (as in the
+core), plus up to 64 small direction/fill/wrap selections and 3 control gates
+for the MODE decode. P3 will report exact synthesis numbers.
+
+### 6.5a Interface contract (P2 additions)
+
+Module shift_stage_mode (src/shift_stage_mode.v):
+
+| Item | Name | Width | Direction | Meaning |
+|------|------|-------|-----------|---------|
+| parameter | SHIFT | - | - | Stage shift amount (1, 2, 4 or 8) |
+| port | in | 16 | input | Data into the stage |
+| port | sel | 1 | input | Stage enable (a SHAMT bit) |
+| port | right | 1 | input | 1 = shift right, 0 = shift left |
+| port | rot | 1 | input | 1 = rotate (left only) |
+| port | fill | 1 | input | Bit entering from the left on right shifts |
+| port | out | 16 | output | Data out of the stage |
+
+Module barrel_shifter16 (src/barrel_shifter16.v):
+
+| Item | Name | Width | Direction | Meaning |
+|------|------|-------|-----------|---------|
+| port | DIN | 16 | input | Data to be shifted |
+| port | SHAMT | 4 | input | Shift amount 0-15 |
+| port | MODE | 2 | input | 00 SLL, 01 SRL, 10 SRA, 11 ROL |
+| port | DOUT | 16 | output | Shifted / rotated result |
+
+### 6.6 Circuit diagram
+
+See docs/diagrams/complete_circuit.svg (top level: MODE decode + four
+shift_stage_mode stages).
+
+### 6.7 Worked examples
+
+Verified results (all four modes):
+
+| DIN | SHAMT | SLL (00) | SRL (01) | SRA (10) | ROL (11) |
+|-----|-------|----------|----------|----------|----------|
+| 0x8001 | 1 | 0x0002 | 0x4000 | 0xC000 | 0x0003 |
+| 0xF0F0 | 4 | 0x0F00 | 0x0F0F | 0xFF0F | 0x0F0F |
+
+Example 1: SRA, DIN = 0x8000, SHAMT = 4 (0100, only stage 3 enabled).
+MODE = 10 so right = 1, rot = 0, fill = DIN[15] = 1. Stage 3 shifts right by 4
+and fills the top 4 bits with 1:
+1000 0000 0000 0000 -> 1111 1000 0000 0000 = 0xF800.
+With SRL (fill = 0) the same input would give 0x0800. This is the difference
+between SRL and SRA.
+
+Example 2: ROL, DIN = 0xF0F0, SHAMT = 4 (only stage 3 enabled).
+MODE = 11 so right = 0, rot = 1. Stage 3 shifts left by 4 and the four bits
+that leave on the left (1111) re-enter on the right:
+1111 0000 1111 0000 -> 0000 1111 0000 1111 = 0x0F0F.
+
+Example 3: SRL, DIN = 0xF0F0, SHAMT = 13 = 1101 (stages 1, 3, 4 enabled).
+Total right shift = 1 + 4 + 8 = 13, zeros enter from the left:
+0xF0F0 >> 13 = 0x0007.
+
+### 6.8 Edge cases tested (tb/tb_barrel_shifter.v)
+
+SHAMT = 0 and 15; DIN = 0x0000, 0xFFFF, 0x8000, 0x7FFF, 0xAAAA, 0x5555, 0xF0F0,
+0x8001, 0x0001, 0x1234, 0xA5A5 for all 4 modes x all 16 shift amounts (704
+directed cases), 12 hand-computed values (including 0x8000 SRA 4 = 0xF800 and
+0xF0F0 SRA 4 = 0xFF0F), and 256 random cases. Total 972 tests, all PASS.
 
 ## 7. Why this design (P1 explanation)
 

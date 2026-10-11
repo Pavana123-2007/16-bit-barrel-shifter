@@ -78,3 +78,31 @@ One PASS line per test case, then:
 - [ ] v0.2-complete (P2)
 - [ ] v0.3-verified (P3)
 - [ ] v1.0-final (P4)
+## Complete shifter (P2, v0.2-complete)
+
+`barrel_shifter16` supports four operations selected by MODE:
+
+| MODE | Operation |
+|------|-----------|
+| 00 | SLL, logical left shift |
+| 01 | SRL, logical right shift |
+| 10 | SRA, arithmetic right shift |
+| 11 | ROL, rotate left |
+
+Ports: `DIN[15:0]`, `SHAMT[3:0]`, `MODE[1:0]`, `DOUT[15:0]`.
+
+Run:
+
+    make core    # P1 core testbench (128 tests)
+    make sim     # P2 self-checking testbench (972 tests)
+    make test    # both, in order
+
+Expected output of `make sim` ends with:
+
+    Total tests : 972
+    Passed      : 972
+    Failed      : 0
+    RESULT: ALL TESTS PASSED
+
+Source files added by P2: `src/shift_stage_mode.v`, `src/barrel_shifter16.v`,
+`tb/tb_barrel_shifter.v`. P1's files are unchanged.
