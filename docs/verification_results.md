@@ -32,15 +32,11 @@ Failed      : 0
 
 ## 3\. Proof that the testbench can fail (bug injection)
 
-If a testbench never fails, "0 failed" proves nothing. Two checks were made:
+If a testbench never fails, "0 failed" proves nothing. One checks were made:
 
 1. `iverilog -DINJECT\_BUG` flips the LSB of the output for SRA with SHAMT = 5.
 Result: Failed = 65,536 (all in SRA), exactly the 65,536 inputs of that one case.
 Log: simulation/logs/exhaustive\_bugtest.log
-2. A real design fault, in a temporary copy only: the SRA fill bit was forced
-to 0 instead of DIN\[15]. Result: Failed = 491,520 (all in SRA mode).
-This equals 15 shift amounts x 32,768 negative inputs, as expected.
-The repository code was not changed.
 
 ## 4\. Waveforms
 
