@@ -32,7 +32,17 @@ tag their checkpoint. Do not edit another person's section.
 
 ## Handoff 3: P3 to P4 (v0.3-verified)
 
-(To be filled in by P3.)
+| Field | Content |
+|-------|---------|
+| From / To | YOUR NAME (P3) to P4, 2026-10-12 |
+| Tag | v0.3-verified |
+| P3.0 gate result | Cloned v0.2-complete (055c508), Icarus Verilog 12.0 on Windows: P1 core test 128/128 PASS and P2 test 972/972 PASS before any change. Gate passed. |
+| How to build and run | Exhaustive test: `iverilog -o exh.out src\shift_stage_mode.v src\barrel_shifter16.v tb\tb_exhaustive.v` then `vvp exh.out`. Bug-injection test: add `-DINJECT_BUG` to the iverilog command (it must report failures). Waveform run: `iverilog -o wave.out src\shift_stage_mode.v src\barrel_shifter16.v tb\tb_waveform.v` then `vvp wave.out`, open simulation\waveforms\barrel.vcd in GTKWave. |
+| Expected output | The exhaustive run ends with `Total tests : 4194304`, `Passed : 4194304`, `Failed : 0`, `RESULT: ALL TESTS PASSED` (about 2 minutes). The bug-injection run ends with `Failed : 65536` (all in SRA) and `RESULT: SOME TESTS FAILED`, which is expected. |
+| What is done | tb/tb_exhaustive.v: every input (65,536) x every shift amount (16) x every mode (4) = 4,194,304 cases, 0 failed. The reference model is independent: it shifts one bit at a time, SHAMT times, without using the shift operators. The bug-injection check proves the testbench detects faults (65,536 failures, all SRA). tb/tb_waveform.v and simulation/waveforms/wave_all_modes.png: directed run for all 4 modes and edge cases, values match the hand-computed table. docs/verification_results.md: test strategy, results, bug check, waveforms, RTL and resource numbers, staged vs large-MUX comparison. docs/diagrams/rtl_top.png: Yosys RTL schematic. Logs are in simulation/logs/. No file in src/ was changed. |
+| Known issues / limitations | The design under test is barrel_shifter16 + shift_stage_mode (P1's barrel_core is not instantiated by the top module). The Yosys schematic and cell counts (P1 core 49 MUX + 17 gates; full design 128 MUX + 21 gates = 149 cells) were generated with Yosys 0.33 on a separate Linux machine, not on the Windows machine. Cell counts depend on tool version. The VCD file is not committed (.gitignore); regenerate it with the waveform run. The exhaustive run takes about 2 minutes. The Makefile has no exhaustive target (GNU Make was not available on the P3 machine). |
+| Interface contract | Unchanged. barrel_shifter16: DIN[15:0], SHAMT[3:0], MODE[1:0] in, DOUT[15:0] out. MODE: 00 SLL, 01 SRL, 10 SRA, 11 ROL. |
+| What the receiver must do next | 1. Clone v0.3-verified and re-run the three testbenches, confirming P1 128/128, P2 972/972 and exhaustive 4,194,304 / 0 failed (P4 gate). 2. Collect one literature source from each of the 4 members and write docs/literature_survey.md (1-2 pages, verify every reference exists). 3. Assemble report/final_report.docx (11 sections) using docs/verification_results.md, the logs, wave_all_modes.png and rtl_top.png. 4. Finalise the README, clean the repo, tag v1.0-final. |
 
 ## Handoff 4: P4 final (v1.0-final)
 
