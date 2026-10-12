@@ -1,0 +1,9 @@
+======================================
+Exhaustive test: 65536 inputs x 16 shifts x 4 modes
+Total tests : 4194304
+Passed      : 4194304
+Failed      : 0
+  failures by mode: SLL=0 SRL=0 SRA=0 ROL=0
+======================================
+RESULT: ALL TESTS PASSED
+tb\tb_exhaustive.v:86: $finish called at 4194304000 (1ps)
