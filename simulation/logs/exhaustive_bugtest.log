@@ -1,0 +1,29 @@
+FAIL: mode=10 shamt=5 din=0000 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0001 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0002 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0003 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0004 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0005 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0006 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0007 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0008 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0009 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000a got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000b got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000c got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000d got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000e got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=000f got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0010 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0011 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0012 got=0001 expected=0000
+FAIL: mode=10 shamt=5 din=0013 got=0001 expected=0000
+======================================
+Exhaustive test: 65536 inputs x 16 shifts x 4 modes
+Total tests : 4194304
+Passed      : 4128768
+Failed      : 65536
+  failures by mode: SLL=0 SRL=0 SRA=65536 ROL=0
+======================================
+RESULT: SOME TESTS FAILED
+tb\tb_exhaustive.v:86: $finish called at 4194304000 (1ps)
