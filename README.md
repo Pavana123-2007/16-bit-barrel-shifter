@@ -76,7 +76,7 @@ One PASS line per test case, then:
 
 - [x] v0.1-core (P1)
 - [ ] v0.2-complete (P2)
-- [ ] v0.3-verified (P3)
+- [x] v0.3-verified (P3)
 - [ ] v1.0-final (P4)
 ## Complete shifter (P2, v0.2-complete)
 
@@ -106,3 +106,25 @@ Expected output of `make sim` ends with:
 
 Source files added by P2: `src/shift_stage_mode.v`, `src/barrel_shifter16.v`,
 `tb/tb_barrel_shifter.v`. P1's files are unchanged.
+
+## Verification (P3, v0.3-verified)
+
+Three levels of testing: the core test (128 tests), the self-checking test (972 tests) and the
+exhaustive test (4,194,304 tests: every input x every shift amount x every mode).
+
+Run the exhaustive test (about 2 minutes):
+
+    iverilog -o exh.out src\shift_stage_mode.v src\barrel_shifter16.v tb\tb_exhaustive.v
+    vvp exh.out
+
+Expected output:
+
+    Total tests : 4194304
+    Passed      : 4194304
+    Failed      : 0
+    RESULT: ALL TESTS PASSED
+
+Bug-injection check (must report failures): add -DINJECT_BUG to the iverilog command.
+Waveform run: compile tb\tb_waveform.v the same way, run it, then open simulation\waveforms\barrel.vcd in GTKWave.
+
+Full write-up: docs/verification_results.md. Logs: simulation/logs/.
