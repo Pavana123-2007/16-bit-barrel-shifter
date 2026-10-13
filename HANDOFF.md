@@ -47,3 +47,16 @@ tag their checkpoint. Do not edit another person's section.
 ## Handoff 4: P4 final (v1.0-final)
 
 (To be filled in by P4.)
+
+## Handoff 4 - P4 independent validation (fresh clone of v0.3-verified)
+
+| Field | Content |
+|---|---|
+| Validated by | Prarthana N, 13-10-2026 |
+| Tag validated | v0.3-verified (commit 8df04e7) |
+| Environment | Windows 11 Home 25H2 (build 26200.9457), cmd, Icarus Verilog 12.0 (devel) (s20150603-1539-g2693dd32b); no make, commands run manually |
+| tb_core (P1) | Total 128, Passed 128, Failed 0 - ALL TESTS PASSED |
+| tb_barrel_shifter (P2) | Total 972, Passed 972, Failed 0 - ALL TESTS PASSED |
+| tb_exhaustive (P3) | Total 4194304, Passed 4194304, Failed 0 (SLL=0 SRL=0 SRA=0 ROL=0) - ALL TESTS PASSED |
+| Notes | barrel_shifter16 uses shift_stage_mode.v; shift_stage.v and barrel_core.v are the P1 regression base only. Makefile has no exhaustive target at this tag; exhaustive test run manually from HANDOFF.md commands. Yosys cell counts (128 MUX + 21 gates) were produced by P3 on a separate Linux machine with Yosys 0.33, not on this machine. |
+| Next (P4) | Literature survey, final report, README/Makefile cleanup, tag v1.0-final |
