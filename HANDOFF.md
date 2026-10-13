@@ -34,7 +34,7 @@ tag their checkpoint. Do not edit another person's section.
 
 | Field | Content |
 |-------|---------|
-| From / To | Rakshita Kamarthi(P3) to P4, 2026-10-12 |
+| From / To | Rakshita Kamarthi (P3) to P4, 2026-10-12 |
 | Tag | v0.3-verified |
 | P3.0 gate result | Cloned v0.2-complete (055c508), Icarus Verilog 12.0 on Windows: P1 core test 128/128 PASS and P2 test 972/972 PASS before any change. Gate passed. |
 | How to build and run | Exhaustive test: `iverilog -o exh.out src\shift_stage_mode.v src\barrel_shifter16.v tb\tb_exhaustive.v` then `vvp exh.out`. Bug-injection test: add `-DINJECT_BUG` to the iverilog command (it must report failures). Waveform run: `iverilog -o wave.out src\shift_stage_mode.v src\barrel_shifter16.v tb\tb_waveform.v` then `vvp wave.out`, open simulation\waveforms\barrel.vcd in GTKWave. |
